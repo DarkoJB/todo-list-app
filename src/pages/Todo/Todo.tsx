@@ -35,7 +35,7 @@ const Todo: FC = () => {
   };
 
   return (
-    <div className="app">
+    <main>
       <h1>To-Do List</h1>
       <div className="input-group">
         <input
@@ -69,7 +69,7 @@ const Todo: FC = () => {
           />
         ))}
       </ul>
-    </div>
+    </main>
   );
 };
 

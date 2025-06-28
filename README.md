@@ -16,7 +16,7 @@ This is a simple To-Do List application built with React 19 and vanilla CSS, com
 The app is deployed on Vercel and can be accessed here:
 
 ```
-span
+https://todo-list-app-sigma-sage.vercel.app/
 ```
 
 ### **Running Locally**
@@ -24,7 +24,7 @@ span
 1. **Clone the repository**
 
    ```
-   git clone https://github.com/your-username/todo-list-app.git
+   git clone https://github.com/DarkoJB/todo-list-app.git
    cd todo-list-app
    ```
 
