@@ -13,20 +13,24 @@ const useTodos = () => {
   }, [todos]);
 
   const addTodo = (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    setTodos([...todos, { uid: randomUid(), name: trimmed, completed: false }]);
+    setTodos([...todos, { uid: randomUid(), name, completed: false }]);
   };
 
   const deleteTodo = (uid: string) => {
     setTodos(todos.filter((todo) => todo.uid !== uid));
   };
 
-  const toggleComplete = (uid: string) => {
+  const editTodo = (uid: string, newName: string) => {
     setTodos(
       todos.map((todo) =>
-        todo.uid === uid ? { ...todo, completed: !todo.completed } : todo
+        todo.uid === uid ? { ...todo, name: newName.trim() === "" ? todo.name : newName } : todo
       )
+    );
+  };
+
+  const toggleComplete = (uid: string) => {
+    setTodos(
+      todos.map((todo) => (todo.uid === uid ? { ...todo, completed: !todo.completed } : todo))
     );
   };
 
@@ -34,6 +38,7 @@ const useTodos = () => {
     todos,
     addTodo,
     deleteTodo,
+    editTodo,
     toggleComplete,
   };
 };
