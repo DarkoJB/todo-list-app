@@ -1,27 +1,37 @@
 import { useEffect, useState, type FC } from "react";
 import "./todo.css";
-import type { CompletedStatus, iTodo } from "../../shared/interfaces";
+import type { iTodo } from "../../shared/interfaces";
 import useTodos from "../../hooks/useTodos";
-import { FaRegPlusSquare, FaRegTrashAlt } from "react-icons/fa";
+import { FaRegPlusSquare } from "react-icons/fa";
+import Filters from "../../components/Filters/Filters";
+import TodoItem from "../../components/TodoItem/TodoItem";
 const Todo: FC = () => {
-  const { todos, addTodo, deleteTodo, toggleComplete } = useTodos();
+  const { todos, addTodo, deleteTodo, editTodo, toggleComplete, filter, filteredTodos, setFilter } =
+    useTodos();
 
   const [input, setInput] = useState("");
-  const [filter, setFilter] = useState<CompletedStatus>("All"); // 'all', 'active', 'completed'
-
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
-
-  const filteredTodos = todos.filter((todo: iTodo) => {
-    if (filter === "Active") return !todo.completed;
-    if (filter === "Completed") return todo.completed;
-    return true;
-  });
+  const [removingTodos, setRemovingTodos] = useState<string[]>([]);
+  const [error, setError] = useState("");
 
   const handleAddTodo = () => {
+    if (!input.trim()) {
+      setError("Name cannot be empty");
+      return;
+    }
     addTodo(input);
     setInput("");
+    setError("");
+  };
+
+  const handleDeleteTodo = (uid: string) => {
+    setRemovingTodos((prev) => [...prev, uid]);
+    setTimeout(() => {
+      deleteTodo(uid);
+      setRemovingTodos((prev) => prev.filter((id) => id !== uid));
+    }, 300);
   };
 
   return (
@@ -33,46 +43,30 @@ const Todo: FC = () => {
           name="name"
           placeholder="Add a task..."
           value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={(event) => event.key === "Enter" && addTodo(input)}
+          onChange={(event) => {
+            setInput(event.target.value);
+            setError("");
+          }}
+          onKeyDown={(event) => event.key === "Enter" && handleAddTodo()}
         />
-        <button onClick={handleAddTodo} aria-label="Add Todo" title="Add Todo">
+        <button onClick={handleAddTodo} aria-label="Add Todo" title="Add Todo" disabled={!input}>
           <FaRegPlusSquare size={"20"} />
         </button>
+        {error && <label className="error-popup">{error}</label>}
       </div>
 
-      <div className="filters">
-        <button onClick={() => setFilter("All")} className={filter === "All" ? "active" : ""}>
-          All
-        </button>
-        <button onClick={() => setFilter("Active")} className={filter === "Active" ? "active" : ""}>
-          Active
-        </button>
-        <button
-          onClick={() => setFilter("Completed")}
-          className={filter === "Completed" ? "active" : ""}
-        >
-          Completed
-        </button>
-      </div>
+      <Filters currentFilter={filter} setFilter={setFilter} />
 
       <ul className="todo-list">
         {filteredTodos.map((todo: iTodo) => (
-          <li key={todo.uid} className={`todo-item ${todo.completed ? "completed" : ""}`}>
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleComplete(todo.uid)}
-            />
-            <span>{todo.name}</span>
-            <button
-              onClick={() => deleteTodo(todo.uid)}
-              aria-label="Delete Todo"
-              title="Delete Todo"
-            >
-              <FaRegTrashAlt />
-            </button>
-          </li>
+          <TodoItem
+            key={todo.uid}
+            todo={todo}
+            isRemoving={removingTodos.includes(todo.uid)}
+            onToggleComplete={toggleComplete}
+            onEdit={editTodo}
+            onDelete={handleDeleteTodo}
+          />
         ))}
       </ul>
     </div>

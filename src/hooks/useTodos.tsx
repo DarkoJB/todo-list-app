@@ -1,39 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { randomUid } from "../utils/randomString";
-import type { iTodo } from "../shared/interfaces";
+import type { CompletedStatus, iTodo } from "../shared/interfaces";
 
-const useTodos = () => {
+const useTodos = (initialFilter: CompletedStatus = "All") => {
   const [todos, setTodos] = useState<iTodo[]>(() => {
     const stored = localStorage.getItem("todos");
     return stored ? JSON.parse(stored) : [];
   });
+  const [filter, setFilter] = useState<CompletedStatus>(initialFilter);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   const addTodo = (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    setTodos([...todos, { uid: randomUid(), name: trimmed, completed: false }]);
+    setTodos([...todos, { uid: randomUid(), name, completed: false }]);
   };
 
   const deleteTodo = (uid: string) => {
     setTodos(todos.filter((todo) => todo.uid !== uid));
   };
 
-  const toggleComplete = (uid: string) => {
+  const editTodo = (uid: string, newName: string) => {
     setTodos(
       todos.map((todo) =>
-        todo.uid === uid ? { ...todo, completed: !todo.completed } : todo
+        todo.uid === uid ? { ...todo, name: newName.trim() === "" ? todo.name : newName } : todo
       )
     );
   };
 
+  const toggleComplete = (uid: string) => {
+    setTodos(
+      todos.map((todo) => (todo.uid === uid ? { ...todo, completed: !todo.completed } : todo))
+    );
+  };
+
+  const filteredTodos = useMemo(() => {
+    switch (filter) {
+      case "Active":
+        return todos.filter((todo) => !todo.completed);
+      case "Completed":
+        return todos.filter((todo) => todo.completed);
+      default:
+        return todos;
+    }
+  }, [todos, filter]);
+
   return {
     todos,
+    filteredTodos,
+    filter,
+    setFilter,
     addTodo,
     deleteTodo,
+    editTodo,
     toggleComplete,
   };
 };

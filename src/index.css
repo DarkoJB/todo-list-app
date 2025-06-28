@@ -22,6 +22,7 @@
   --background: #f8f9fa;
   --text: #444;
   --completed-text: #a0a0a0;
+  --error: #e13131;
 }
 
 body {
@@ -43,7 +44,11 @@ button {
 }
 
 button:hover {
-  background-color: #594ce3;
+  background: var(--secondary);
+}
+
+button:disabled {
+  background: var(--completed-text);
 }
 
 input[type="text"] {
@@ -84,4 +89,54 @@ input[type="checkbox"]:checked::after {
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.error-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background-color: var(--error);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .error-popup {
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+}
+
+/* Fade-in animation on add */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade-out animation on remove */
+@keyframes fadeOutSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
 }
