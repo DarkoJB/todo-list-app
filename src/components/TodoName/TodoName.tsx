@@ -50,6 +50,8 @@ const TodoName: FC<{
         onClick={() => {
           !editMode ? toggleEditMode() : handleSave();
         }}
+        aria-label={!editMode ? "Edit Todo" : "Save Todo"}
+        title={!editMode ? "Edit Todo" : "Save Todo"}
       >
         {!editMode ? <FaPen size={"15"} /> : <FaCheck size={"15"} />}
       </button>

@@ -44,43 +44,6 @@
   margin: 0;
 }
 
-.todo-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid var(--background);
-  animation: fadeInSlideUp 0.3s ease;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-}
-
-.todo-item.removing {
-  animation: fadeOutSlideDown 0.3s ease forwards;
-}
-
-.todo-item.completed span {
-  text-decoration: line-through;
-  color: var(--completed-text);
-}
-
-.todo-item input[type="checkbox"] {
-  margin-right: 0.75rem;
-  transform: scale(1.2);
-  cursor: pointer;
-}
-
-.todo-item button {
-  border: none;
-  cursor: pointer;
-  font-size: 1.25rem;
-  transition: color 0.2s;
-}
-
-.todo-item button:hover {
-  color: var(--background);
-}
-
 @media (max-width: 768px) {
   .app {
     margin: 1rem;
@@ -94,20 +57,5 @@
 
   .input-group input[type="text"] {
     font-size: 1rem;
-  }
-
-  .todo-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-
-  .todo-item input[type="checkbox"] {
-    align-self: flex-start;
-    transform: scale(1);
-  }
-
-  .todo-item button {
-    align-self: flex-end;
   }
 }

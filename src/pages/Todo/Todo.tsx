@@ -1,26 +1,20 @@
 import { useEffect, useState, type FC } from "react";
 import "./todo.css";
-import type { CompletedStatus, iTodo } from "../../shared/interfaces";
+import type { iTodo } from "../../shared/interfaces";
 import useTodos from "../../hooks/useTodos";
-import { FaRegPlusSquare, FaRegTrashAlt } from "react-icons/fa";
-import TodoName from "../../components/TodoName/TodoName";
+import { FaRegPlusSquare } from "react-icons/fa";
 import Filters from "../../components/Filters/Filters";
+import TodoItem from "../../components/TodoItem/TodoItem";
 const Todo: FC = () => {
-  const { todos, addTodo, deleteTodo, editTodo, toggleComplete } = useTodos();
+  const { todos, addTodo, deleteTodo, editTodo, toggleComplete, filter, filteredTodos, setFilter } =
+    useTodos();
 
   const [input, setInput] = useState("");
-  const [filter, setFilter] = useState<CompletedStatus>("All"); // 'all', 'active', 'completed'
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
   const [removingTodos, setRemovingTodos] = useState<string[]>([]);
   const [error, setError] = useState("");
-
-  const filteredTodos = todos.filter((todo: iTodo) => {
-    if (filter === "Active") return !todo.completed;
-    if (filter === "Completed") return todo.completed;
-    return true;
-  });
 
   const handleAddTodo = () => {
     if (!input.trim()) {
@@ -30,10 +24,6 @@ const Todo: FC = () => {
     addTodo(input);
     setInput("");
     setError("");
-  };
-
-  const handleEditTodo = (uid: string, name: string) => {
-    editTodo(uid, name);
   };
 
   const handleDeleteTodo = (uid: string) => {
@@ -69,27 +59,14 @@ const Todo: FC = () => {
 
       <ul className="todo-list">
         {filteredTodos.map((todo: iTodo) => (
-          <li
+          <TodoItem
             key={todo.uid}
-            className={`todo-item ${todo.completed ? "completed" : ""} ${
-              removingTodos.includes(todo.uid) ? "removing" : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              name="toggle complete"
-              checked={todo.completed}
-              onChange={() => toggleComplete(todo.uid)}
-            />
-            <TodoName todo={todo} handleChange={(name) => handleEditTodo(todo.uid, name)} />
-            <button
-              onClick={() => handleDeleteTodo(todo.uid)}
-              aria-label="Delete Todo"
-              title="Delete Todo"
-            >
-              <FaRegTrashAlt size={"15"} />
-            </button>
-          </li>
+            todo={todo}
+            isRemoving={removingTodos.includes(todo.uid)}
+            onToggleComplete={toggleComplete}
+            onEdit={editTodo}
+            onDelete={handleDeleteTodo}
+          />
         ))}
       </ul>
     </div>
